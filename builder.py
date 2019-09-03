@@ -6,12 +6,14 @@ import click
 from config import DATABASE
 from dragonfly.db.database_migrator import DatabaseMigrator
 
+import os
+
 templates = {}
 
-templates['models'] = Template('''from dragonfly.db.models.model import Model
+templates['models'] = Template('''from dragonfly import models
 
 
-class $name(Model):
+class $name(models.Model):
     pass
 
 ''')
@@ -29,7 +31,8 @@ class $name:
 
 ''')
 
-templates['controllers'] = Template('''from dragonfly.controller import Controller
+templates['controllers'] = Template('''from dragonfly import Controller
+
 
 
 class $name(Controller):
@@ -43,15 +46,27 @@ def cli():
     pass
 
 
+@cli.command()
+def setup():
+    """
+    Creates the required directories for the application to work.
+    """
+    os.makedirs('controllers', exist_ok=True)
+    os.makedirs('models', exist_ok=True)
+    os.makedirs('storage', exist_ok=True)
+    os.makedirs('middleware', exist_ok=True)
+
+    click.secho("Successfully created directories!", fg="green")
+
 # generate commands
 @cli.command()
 @click.option('--type', type=click.Choice(['model', 'middleware', 'controller']),
               help="The type of file you want to generate.")
-@click.argument('name', type=click.STRING)
+@click.argument('name', type=click.STRING,)
 def generate(type, name):
     """
-    Generate the desired file type. The files should be named according to the PEP 8 naming scheme. Please note that the
-    file names are converted to camel case for the class names.
+    Generate the desired file type. The files should be named according to the PEP 8 naming scheme (snake case). Please
+    note that the file names are converted to camel case for the class names.
     """
     old_type = type
     if type != 'middleware':
@@ -68,6 +83,7 @@ def migrate():
     """
     Generate the SQL to create the tables for all user created models and run it.
     """
+
     dbm = DatabaseMigrator()
 
     db = MySQLdb.connect(**DATABASE, cursorclass=MySQLdb.cursors.DictCursor)
