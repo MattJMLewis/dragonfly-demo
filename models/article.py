@@ -9,6 +9,5 @@ class Article(models.Model):
     text = models.TextField()
 
     def url(self):
-
         return url(f"articles/{self.id}")
 
