@@ -1,2 +1,4 @@
 Click>=7.0
 colorama>=0.4.1
+mysqlclient>=1.4.4
+dragonfly-web>=1.0
