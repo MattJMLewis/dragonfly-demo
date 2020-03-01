@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.name }}</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css">
+</head>
+<body>
+<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+    <div class="container">
+        <a href="{{ Utils.url('') }}" class="navbar-brand">Dragonfly</a>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ Utils.url('articles') }}">Articles</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" method="POST" action="{{ Utils.url('logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ Auth.get('csrf_token') )}}">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Log out</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card border-secondary mb-3">
+                <div class="card-header">{{ article.name }}</div>
+                <div class="card-body">
+                    {{ article.text }}
+                    <br>
+                    {{ article.updated_at }}
+                    <br>
+                    {{ article.created_at }}
+                </div>
+            </div>
+            @if(article.comments)
+            <div class="card border-secondary mb-3">
+                <div class="card-header">Comments</div>
+                <ul class="list-group list-group-flush">
+                    @for(comment in article.comments())
+                    <li class="list-group-item">
+                        {{ $comment.comment$ }}
+                        @if($comment.user().id$ == user.id)
+                        <form method="POST" class="float-right" action="{{ $comment.url()$ }}">
+                            <input name="_method" type="hidden" value="DELETE">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                        @else
+                        <a class="float-right" href="{{ $comment.user().url()$ }}">
+                            <span>{{ $comment.user().username$ }}</span>
+                        </a>
+                        @endif
+                        <span class="badge badge-secondary">{{ $comment.created_at$ }}</span>
+
+                    </li>
+                    @endfor
+                    <li class="list-group-item">
+                        <form method="POST" action="{{ article.url() + '/comments' }}">
+                            <input type="hidden" name="csrf_token" value="{{ Auth.get('csrf_token') )}}">
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="comment"></input>
+                            </div>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            @else
+            <div class="card border-secondary mb-3">
+                <div class="card-header">Add a Comment</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ article.url() + '/comments' }}">
+                        <input type="hidden" name="csrf_token" value="{{ Auth.get('csrf_token') )}}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="comment"></input>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @endif
+            @if(article.user().id == user.id)
+            <a href="{{ article.url() }}/edit">
+                <button type="submit" class="btn btn-warning">Edit</button>
+            </a>
+            @endif
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

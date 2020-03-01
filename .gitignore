@@ -128,3 +128,5 @@ dmypy.json
 
 dragonfly/
 storage/
+.DS_Store
+dragonfly

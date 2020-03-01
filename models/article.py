@@ -1,13 +1,20 @@
+from config import URL
 from dragonfly import models
-from dragonfly.utils import url
 
 
 class Article(models.Model):
-
-    id = models.IntField(null=False, primary_key=True, unsigned=True, auto_increment=True)
-    name = models.CharField(null=False, unique=True, max_length=100)
+    name = models.VarCharField(length=255)
     text = models.TextField()
+    user_id = models.IntField(unsigned=True)
+
+    class Meta:
+        article_user_fk = models.ForeignKey('user_id').references('id').on('users')
 
     def url(self):
-        return url(f"articles/{self.id}")
+        return f"{URL}/articles/{self.id}"
 
+    def comments(self):
+        return self.add_relationship(models.HasMany(target='comment'))
+
+    def user(self):
+        return self.add_relationship(models.BelongsTo(target='user'))
