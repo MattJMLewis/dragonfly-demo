@@ -21,7 +21,7 @@ templates['middleware'] = Template('''
 class $name:
 
     actions = []
-
+    
     def before(self):
         pass
 
@@ -30,10 +30,9 @@ class $name:
 
 ''')
 
-templates['controllers'] = Template('''from dragonfly import Controller
+templates['controllers'] = Template('''
 
-
-class $name(Controller):
+class $name:
     pass
 
 ''')
@@ -292,7 +291,7 @@ def setup():
     os.makedirs('models', exist_ok=True)
     os.makedirs('storage', exist_ok=True)
     os.makedirs('middleware', exist_ok=True)
-    od.makedirs('templates', exist_ok=True)
+    os.makedirs('templates', exist_ok=True)
 
     click.secho("Successfully created directories!", fg="green")
 
