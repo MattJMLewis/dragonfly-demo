@@ -1,5 +1,6 @@
 from wsgiref.simple_server import make_server
 
+from config import URL
 from dragonfly import request
 from routes import routes
 
@@ -12,5 +13,8 @@ def app(environ, start_response):
     return [response.content]
 
 
-httpd = make_server('localhost', 8080, app)
+url = URL[7:]
+host, port = url.split(':')
+
+httpd = make_server(host, int(port), app)
 httpd.serve_forever()
